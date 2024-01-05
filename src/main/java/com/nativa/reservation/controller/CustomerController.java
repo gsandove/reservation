@@ -1,11 +1,11 @@
 package com.nativa.reservation.controller;
 
+import com.nativa.reservation.Error.ErrorMessages;
 import com.nativa.reservation.domain.dto.request.CustomerRequestDTO;
 import com.nativa.reservation.domain.dto.request.CustomerUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.CustomerResponseDTO;
 import com.nativa.reservation.service.CustomerService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,10 +41,10 @@ public class CustomerController {
     }
 
     @PutMapping
-    public ResponseEntity<CustomerResponseDTO> update(CustomerUpdateRequestDTO requestDTO){
+    public ResponseEntity<?> update(CustomerUpdateRequestDTO requestDTO) throws BadRequestException {
         CustomerResponseDTO response = this.service.update(requestDTO);
         if(response == null)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error : " + ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);
 
         return ResponseEntity.ok(response);
     }

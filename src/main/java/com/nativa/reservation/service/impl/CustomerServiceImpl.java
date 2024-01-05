@@ -1,15 +1,16 @@
 package com.nativa.reservation.service.impl;
 
+import com.nativa.reservation.Error.ErrorMessages;
 import com.nativa.reservation.domain.Customer;
 import com.nativa.reservation.domain.dto.request.CustomerRequestDTO;
 import com.nativa.reservation.domain.dto.request.CustomerUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.CustomerResponseDTO;
 import com.nativa.reservation.repository.CustomerRepository;
 import com.nativa.reservation.service.CustomerService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,10 +34,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDTO findById(UUID uuid) {
-        Optional<Customer> entityOpt = this.repository.findById(uuid);
+    public CustomerResponseDTO findById(UUID uuid) throws BadRequestException {
+        Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
         if(entityOpt.isPresent() == false)
-            return null;
+            throw new BadRequestException(ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);;
         return this.toDto(entityOpt.get());
     }
 
@@ -55,8 +56,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO) {
-        Optional<Customer> entityOpt = this.repository.findById(updateRequestDTO.getUuid());
+    public CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO) throws BadRequestException {
+        Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(updateRequestDTO.getUuid());
 
         if(entityOpt.isPresent() == false)
             return null;
@@ -72,8 +73,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void delete(UUID uuid) {
-
+    public void delete(UUID uuid) throws BadRequestException {
+        Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
+        if(entityOpt.isPresent() == false)
+            return;
+        Customer entity = entityOpt.get();
+        entity.setDeletedAt(new Date());
+        this.repository.save(entity);
     }
 
     private CustomerResponseDTO toDto(Customer customer){

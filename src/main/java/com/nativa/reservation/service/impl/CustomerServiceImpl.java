@@ -37,7 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponseDTO findById(UUID uuid) throws BadRequestException {
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
         if(entityOpt.isPresent() == false)
-            throw new BadRequestException(ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);;
+            return null;;
         return this.toDto(entityOpt.get());
     }
 

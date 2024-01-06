@@ -40,6 +40,14 @@ public class CustomerController {
         return ResponseEntity.ok(responseDTOS);
     }
 
+    @GetMapping("/{uuid}")
+    public ResponseEntity<?> findById(@PathVariable("uuid") UUID uuid) throws BadRequestException {
+        CustomerResponseDTO responseDTO = this.service.findById(uuid);
+        if (responseDTO == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error : " + ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);
+        return ResponseEntity.ok(this.service.findById(uuid));
+    }
+
     @PutMapping
     public ResponseEntity<?> update(CustomerUpdateRequestDTO requestDTO) throws BadRequestException {
         CustomerResponseDTO response = this.service.update(requestDTO);

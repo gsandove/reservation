@@ -1,6 +1,5 @@
-package com.nativa.reservation.domain.dto.response;
+package com.nativa.reservation.domain.dto.request;
 
-import com.nativa.reservation.domain.dto.request.StadiumRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,9 +8,9 @@ import lombok.experimental.SuperBuilder;
 import java.util.UUID;
 
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class StadiumResponseDTO extends StadiumRequestDTO {
+public class StadiumUpdateRequestDTO extends StadiumRequestDTO{
     private UUID uuid;
 }

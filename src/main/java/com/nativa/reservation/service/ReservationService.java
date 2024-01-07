@@ -11,6 +11,6 @@ public interface ReservationService {
     // buscar reservaciones por cliente
     // buscar reservaciones del día por cliente
     // buscar reservación por día y cliente
-    // eliminar reservación
+    // eliminar reservación por id
 
 }

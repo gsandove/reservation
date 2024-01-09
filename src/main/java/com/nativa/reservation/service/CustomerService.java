@@ -12,11 +12,11 @@ public interface CustomerService {
 
     List<CustomerResponseDTO> findAll();
 
-    CustomerResponseDTO findById(UUID uuid) throws BadRequestException;
+    CustomerResponseDTO findById(UUID uuid);
 
     CustomerResponseDTO save(CustomerRequestDTO requestDTO);
 
-    CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO) throws BadRequestException;
+    CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO);
 
-    void delete(UUID uuid) throws BadRequestException;
+    void delete(UUID uuid);
 }

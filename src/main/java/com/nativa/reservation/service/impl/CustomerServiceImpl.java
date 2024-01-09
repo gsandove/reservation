@@ -34,7 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDTO findById(UUID uuid) throws BadRequestException {
+    public CustomerResponseDTO findById(UUID uuid) {
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
         if(entityOpt.isPresent() == false)
             return null;;
@@ -51,12 +51,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
 
         Customer saveEntity = this.repository.save(customer);
-
         return this.toDto(saveEntity);
     }
 
     @Override
-    public CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO) throws BadRequestException {
+    public CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO) {
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(updateRequestDTO.getUuid());
 
         if(entityOpt.isPresent() == false)
@@ -73,7 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void delete(UUID uuid) throws BadRequestException {
+    public void delete(UUID uuid) {
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
         if(entityOpt.isPresent() == false)
             return;
@@ -83,6 +82,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerResponseDTO toDto(Customer customer){
+        if(customer == null)
+            return null;
         return CustomerResponseDTO.builder()
                 .uuid(customer.getUuid())
                 .name(customer.getName())

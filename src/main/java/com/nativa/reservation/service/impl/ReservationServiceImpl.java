@@ -8,6 +8,7 @@ import com.nativa.reservation.domain.dto.request.ReservationUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.ReservationResponseDTO;
 import com.nativa.reservation.repository.ReservationRepository;
 import com.nativa.reservation.service.ReservationService;
+import io.awspring.cloud.s3.S3Template;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,9 +23,11 @@ import java.util.stream.Collectors;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository repository;
+    private final S3Template s3Template;
 
-    public ReservationServiceImpl(ReservationRepository repository) {
+    public ReservationServiceImpl(ReservationRepository repository, S3Template s3Template) {
         this.repository = repository;
+        this.s3Template = s3Template;
     }
 
     @Override
@@ -76,6 +79,16 @@ public class ReservationServiceImpl implements ReservationService {
         entity.setDeletedAt(LocalDateTime.now());
 
         this.repository.save(entity);
+    }
+
+    @Override
+    public void saveVoucher() {
+
+    }
+
+    @Override
+    public void getVoucherFile() {
+
     }
 
     private ReservationResponseDTO toDto(Reservation reservation){

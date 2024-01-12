@@ -7,8 +7,12 @@ import com.nativa.reservation.domain.dto.request.CustomerUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.CustomerResponseDTO;
 import com.nativa.reservation.repository.CustomerRepository;
 import com.nativa.reservation.service.CustomerService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.util.Date;
 import java.util.List;
@@ -16,13 +20,16 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
+    private final S3Client s3Client;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, S3Client s3Client) {
         this.repository = customerRepository;
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -79,6 +86,21 @@ public class CustomerServiceImpl implements CustomerService {
         Customer entity = entityOpt.get();
         entity.setDeletedAt(new Date());
         this.repository.save(entity);
+    }
+
+    @Override
+    public void saveDocument() {
+
+    }
+
+    @Override
+    public void getDocumentFile() {
+        GetObjectRequest request = GetObjectRequest.builder()
+                .bucket("reservation.app")
+                .key("CARNET-COVID.jpeg")
+                .build();
+        GetObjectResponse response = s3Client.getObject(request).response();
+        log.info("imagen: {}", response.contentType());
     }
 
     private CustomerResponseDTO toDto(Customer customer){

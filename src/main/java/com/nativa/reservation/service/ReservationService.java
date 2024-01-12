@@ -25,4 +25,7 @@ public interface ReservationService {
     // eliminar reservación por id
 
     void delete(UUID uuid);
+
+    void saveVoucher();
+    void getVoucherFile();
 }

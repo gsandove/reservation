@@ -19,4 +19,8 @@ public interface CustomerService {
     CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO);
 
     void delete(UUID uuid);
+
+    void saveDocument();
+
+    void getDocumentFile();
 }

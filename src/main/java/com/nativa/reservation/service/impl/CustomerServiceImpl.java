@@ -13,7 +13,12 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +39,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerResponseDTO> findAll() {
+        this.getDocumentFile();
         return this.repository.findAllByDeletedAtIsNull()
                 .stream()
                 .map(this::toDto)
@@ -42,9 +48,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponseDTO findById(UUID uuid) {
+        this.saveDocument();
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
         if(entityOpt.isPresent() == false)
-            return null;;
+            return null;
         return this.toDto(entityOpt.get());
     }
 
@@ -90,7 +97,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void saveDocument() {
-
+        File file = new File(getClass().getClassLoader().getResource("simpleTextFile").getPath());
+        PutObjectRequest requestToUploadFile = PutObjectRequest.builder().build();
+        PutObjectResponse response = PutObjectResponse.builder().build();
+        log.info("upload : "+file.getName()+" to S3.");
+        s3Client.putObject(PutObjectRequest.builder()
+                .bucket("reservation.app")
+                .key(file.getName())
+                .build(), Paths.get(file.getPath()));
     }
 
     @Override

@@ -11,6 +11,8 @@ import com.nativa.reservation.service.ReservationService;
 import io.awspring.cloud.s3.S3Template;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -24,6 +26,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository repository;
     private final S3Template s3Template;
+    private final String BUCKET_NAME = "reservation.app"; //luego pasara a ser una variable en app.properties
 
     public ReservationServiceImpl(ReservationRepository repository, S3Template s3Template) {
         this.repository = repository;
@@ -58,6 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponseDTO> findNowDayReservations() {
+        this.getVoucherFile();
         return this.repository
                 .findAllByDeletedAtIsNullAndReservationDayIsBetween(
                         LocalDateTime.now().with(LocalTime.MIN),
@@ -88,6 +92,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void getVoucherFile() {
+
+        File file = s3Template.createSignedGetURL(BUCKET_NAME, "CARNET-COVID.jpeg", Duration.ofMinutes(3));
 
     }
 

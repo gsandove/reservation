@@ -93,7 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void getVoucherFile() {
 
-        File file = s3Template.createSignedGetURL(BUCKET_NAME, "CARNET-COVID.jpeg", Duration.ofMinutes(3));
+//        File file = s3Template.createSignedGetURL(BUCKET_NAME, "CARNET-COVID.jpeg", Duration.ofMinutes(3));
 
     }
 

@@ -10,12 +10,10 @@ import com.nativa.reservation.service.S3ClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,56 +34,59 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerResponseDTO> findAll() {
-        this.getDocumentFile();
+//        this.getDocumentFile();
         return this.repository.findAllByDeletedAtIsNull()
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public CustomerResponseDTO findById(UUID uuid) {
-        this.s3ClientService.get("CARNET-COVID.jpeg");
+//        this.s3ClientService.get("CARNET-COVID.jpeg");
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
-        if(entityOpt.isPresent() == false)
+        if(!entityOpt.isPresent())
             return null;
         return this.toDto(entityOpt.get());
     }
 
     @Override
     public CustomerResponseDTO save(CustomerRequestDTO requestDTO) {
-        Customer customer =  Customer.builder()
-                .name(requestDTO.getName())
-                .lastname(requestDTO.getLastname())
-                .documentNumber(requestDTO.getDocumentNumber())
-                .counter(0)
-                .build();
+        Optional<Customer> customerOptional = this.repository.findByDocumentNumberAndDeletedAtIsNull(requestDTO.getDocumentNumber());
+        if (customerOptional.isPresent())
+            return this.toDto(customerOptional.get());
+        else {
+            Customer customer =  Customer.builder()
+                    .name(requestDTO.getName())
+                    .lastName(requestDTO.getLastName())
+                    .documentNumber(requestDTO.getDocumentNumber())
+                    .counter(0)
+                    .build();
 
-        Customer saveEntity = this.repository.save(customer);
-        return this.toDto(saveEntity);
+            Customer saveEntity = this.repository.save(customer);
+            return this.toDto(saveEntity);
+        }
     }
 
     @Override
-    public CustomerResponseDTO update(CustomerUpdateRequestDTO updateRequestDTO) {
-        Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(updateRequestDTO.getUuid());
+    public CustomerResponseDTO update(UUID uuid, CustomerUpdateRequestDTO updateRequestDTO) {
+        Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
 
-        if(entityOpt.isPresent() == false)
+        if(!entityOpt.isPresent())
             return null;
 
         Customer entity = entityOpt.get();
         entity.setName(updateRequestDTO.getName());
-        entity.setLastname(updateRequestDTO.getLastname());
-        entity.setDocumentNumber(updateRequestDTO.getDocumentNumber());
+        entity.setLastName(updateRequestDTO.getLastName());
 
-        this.repository.save(entity);
-
-        return this.toDto(entity);
+        Customer updateEntity = this.repository.save(entity);
+        return this.toDto(updateEntity);
     }
 
     @Override
     public void delete(UUID uuid) {
         Optional<Customer> entityOpt = this.repository.findByUuidAndDeletedAtIsNull(uuid);
-        if(entityOpt.isPresent() == false)
+        if (!entityOpt.isPresent())
             return;
         Customer entity = entityOpt.get();
         entity.setDeletedAt(new Date());
@@ -120,8 +121,9 @@ public class CustomerServiceImpl implements CustomerService {
         return CustomerResponseDTO.builder()
                 .uuid(customer.getUuid())
                 .name(customer.getName())
-                .lastname(customer.getLastname())
+                .lastName(customer.getLastName())
                 .documentNumber(customer.getDocumentNumber())
+                .counter(customer.getCounter())
                 .build();
     }
 

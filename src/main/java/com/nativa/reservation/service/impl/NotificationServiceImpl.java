@@ -5,7 +5,6 @@ import io.awspring.cloud.sns.core.SnsTemplate;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
@@ -33,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
         this.snsClient.publish(request);
     }
 
-    @SqsListener("${queue.aws.reservation}")
+//    @SqsListener("${queue.aws.reservation}")
     @Override
     public void receive(String message) {
         log.info("message: {}", message);

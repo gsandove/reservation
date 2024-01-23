@@ -1,12 +1,10 @@
 package com.nativa.reservation.controller;
 
-import com.nativa.reservation.Error.ErrorMessages;
 import com.nativa.reservation.domain.dto.request.CustomerRequestDTO;
 import com.nativa.reservation.domain.dto.request.CustomerUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.CustomerResponseDTO;
 import com.nativa.reservation.service.CustomerService;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/customer")
 public class CustomerController {
 
     private final CustomerService service;
@@ -23,47 +21,72 @@ public class CustomerController {
         this.service = service;
     }
 
+    @Operation(summary = "guarda un cliente", description = "guarda un cliente")
     @PostMapping
-    public ResponseEntity<CustomerResponseDTO> save(@RequestBody CustomerRequestDTO requestDTO){
-        CustomerResponseDTO response = this.service.save(requestDTO);
-        return  ResponseEntity
-                .status( response == null ? HttpStatus.INTERNAL_SERVER_ERROR.value() : HttpStatus.OK.value())
-                .body(response);
+    public ResponseEntity<CustomerResponseDTO> save(@RequestBody CustomerRequestDTO requestDTO) {
+        try {
+            CustomerResponseDTO response = this.service.save(requestDTO);
+            return  ResponseEntity.ok(response);
+        }
+        catch (Exception exception) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
+    @Operation(summary = "obtiene la lista de clientes", description = "obtiene la lista de clientes")
     @GetMapping
-    public ResponseEntity<List<CustomerResponseDTO>> findAll(){
-        List<CustomerResponseDTO> responseDTOS = this.service.findAll();
-        if(responseDTOS.isEmpty())
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<List<CustomerResponseDTO>> findAll() {
+        try {
+            List<CustomerResponseDTO> responseDTOS = this.service.findAll();
+            if(responseDTOS.isEmpty())
+                return ResponseEntity.noContent().build();
 
-        return ResponseEntity.ok(responseDTOS);
+            return ResponseEntity.ok(responseDTOS);
+        }
+        catch (Exception exception) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
+    @Operation(summary = "obtiene un cliente", description = "obtiene un cliente")
     @GetMapping("/{uuid}")
-    public ResponseEntity<?> findById(@PathVariable("uuid") UUID uuid) throws BadRequestException {
-        CustomerResponseDTO responseDTO = this.service.findById(uuid);
-        if (responseDTO == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error : " + ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);
-        return ResponseEntity.ok(this.service.findById(uuid));
+    public ResponseEntity<CustomerResponseDTO> findById(@PathVariable("uuid") UUID uuid) {
+        try {
+            CustomerResponseDTO responseDTO = this.service.findById(uuid);
+            if (responseDTO == null)
+                return ResponseEntity.noContent().build();
+
+            return ResponseEntity.ok(responseDTO);
+        }
+        catch (Exception exception) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
-    @PutMapping
-    public ResponseEntity<?> update(CustomerUpdateRequestDTO requestDTO) throws BadRequestException {
-        CustomerResponseDTO response = this.service.update(requestDTO);
-        if(response == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error : " + ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);
+    @Operation(summary = "actualiza un cliente", description = "actualiza un cliente")
+    @PutMapping("/{uuid}")
+    public ResponseEntity<CustomerResponseDTO> update(@PathVariable("uuid") UUID uuid, @RequestBody CustomerUpdateRequestDTO requestDTO) {
+        try {
+            CustomerResponseDTO response = this.service.update(uuid, requestDTO);
+            if(response == null)
+                return ResponseEntity.noContent().build();
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception exception) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@RequestParam UUID uuid){
-        try{
+    @Operation(summary = "elimina un cliente", description = "elimina un cliente")
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
+        try {
             this.service.delete(uuid);
             return ResponseEntity.noContent().build();
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error : "+e.getMessage());
+        }
+        catch (Exception exception) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -13,5 +13,4 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CustomerUpdateRequestDTO extends CustomerRequestDTO{
     private UUID uuid;
-
 }

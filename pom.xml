@@ -15,7 +15,7 @@
 	<description>synthetic pitch reservations service</description>
 
 	<properties>
-		<java.version>19</java.version>
+		<java.version>17</java.version>
 		<spring-cloud-aws.version>3.1.0</spring-cloud-aws.version>
 	</properties>
 

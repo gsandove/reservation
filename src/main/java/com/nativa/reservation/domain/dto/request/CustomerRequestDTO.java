@@ -11,6 +11,6 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class CustomerRequestDTO {
     private String name;
-    private String lastname;
+    private String lastName;
     private String documentNumber;
 }

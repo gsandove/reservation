@@ -7,6 +7,7 @@ import com.nativa.reservation.domain.dto.request.ReservationRequestDTO;
 import com.nativa.reservation.domain.dto.request.ReservationUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.ReservationResponseDTO;
 import com.nativa.reservation.repository.ReservationRepository;
+import com.nativa.reservation.service.NotificationService;
 import com.nativa.reservation.service.ReservationService;
 import io.awspring.cloud.s3.S3Template;
 import org.springframework.stereotype.Service;
@@ -28,13 +29,17 @@ public class ReservationServiceImpl implements ReservationService {
     private final S3Template s3Template;
     private final String BUCKET_NAME = "reservation.app"; //luego pasara a ser una variable en app.properties
 
-    public ReservationServiceImpl(ReservationRepository repository, S3Template s3Template) {
+    private final NotificationService notificationService;
+
+    public ReservationServiceImpl(ReservationRepository repository, S3Template s3Template, NotificationService notificationService) {
         this.repository = repository;
         this.s3Template = s3Template;
+        this.notificationService = notificationService;
     }
 
     @Override
     public ReservationResponseDTO save(ReservationRequestDTO requestDTO) {
+
         //find Stadium
         Reservation reservation = Reservation.builder()
                 .createdAt(LocalDateTime.now())
@@ -51,6 +56,9 @@ public class ReservationServiceImpl implements ReservationService {
                 .build();
         //find Customer
         Reservation entitySaved = this.repository.save(reservation);
+
+        this.notificationService.send("hola", entitySaved.toString());
+
         return this.toDto(entitySaved);
     }
 

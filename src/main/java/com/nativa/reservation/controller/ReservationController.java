@@ -37,6 +37,7 @@ public class ReservationController {
 
     @PostMapping
     ResponseEntity<?> save(@RequestBody ReservationRequestDTO requestDTO) {
+        // TODO: mover esta logica al service
         //buscar en service Stadium si existe sino retorna error que no existe
         StadiumResponseDTO stadiumRequest = this.stadiumService.findById(requestDTO.getStadiumId());
         if(stadiumRequest == null)
@@ -46,7 +47,9 @@ public class ReservationController {
         if (customerRequest == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body("Error : "+ ErrorMessages.ERROR_CUSTOMER_NO_EXISTS);
 
+        // TODO: verificar en la hora indicada si la cancha esta disponible
         ReservationResponseDTO response = this.reservationService.save(requestDTO);
+
         if(response == null)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body("Error : "+ ErrorMessages.ERROR_RESERVATION_NO_EXISTS);
         return ResponseEntity.ok(response);

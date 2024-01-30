@@ -5,6 +5,7 @@ import com.nativa.reservation.domain.dto.request.CustomerUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.CustomerResponseDTO;
 import com.nativa.reservation.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

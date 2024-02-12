@@ -4,6 +4,7 @@ import com.nativa.reservation.domain.dto.request.ReservationRequestDTO;
 import com.nativa.reservation.domain.dto.request.ReservationUpdateRequestDTO;
 import com.nativa.reservation.domain.dto.response.ReservationResponseDTO;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public interface ReservationService {
     // buscar reservación por día y cliente
     // eliminar reservación por id
 
+    ReservationResponseDTO findReservationInNowDayByStartHour(LocalTime startHour);
     void delete(UUID uuid);
 
     void saveVoucher();

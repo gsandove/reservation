@@ -39,6 +39,7 @@ public class CustomerController {
     public ResponseEntity<List<CustomerResponseDTO>> findAll() {
         try {
             List<CustomerResponseDTO> responseDTOS = this.service.findAll();
+            responseDTOS.stream().filter(e-> e.getCounter() > 2).findAny();
             if(responseDTOS.isEmpty())
                 return ResponseEntity.noContent().build();
 

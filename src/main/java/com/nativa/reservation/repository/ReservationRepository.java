@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,5 +19,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
     @Query("SELECT r FROM Reservation r WHERE (r.reservationDay BETWEEN :startHourDay AND :endHourDay) AND r.deletedAt IS NULL")
     List<Reservation> findAllByDeletedAtIsNullAndReservationDayIsBetween(@Param("startHourDay")LocalDateTime startHourDay,@Param("endHourDay")LocalDateTime endHourDay);
+
+    @Query("SELECT r FROM Reservation r WHERE r.startHour = :specifiedStartHour AND r.deletedAt IS NULL")
+    List<Reservation> findReservationByStartHourAndDeletedAtIsNull(@Param("specifiedStartHour") LocalTime startHour);
+
+
 
 }

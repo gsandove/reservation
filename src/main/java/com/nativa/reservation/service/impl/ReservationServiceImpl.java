@@ -16,10 +16,7 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,6 +75,21 @@ public class ReservationServiceImpl implements ReservationService {
                 .map(this::toDto)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ReservationResponseDTO findReservationInNowDayByStartHour(LocalTime startHour){
+
+        Date dayNow = new Date();
+        List<Reservation> listReservations = this.repository.findReservationByStartHourAndDeletedAtIsNull(startHour);
+        List<Reservation> filterReservations = listReservations.stream().filter(r -> r.getReservationDay().getDay() == dayNow.getDay()
+                && r.getReservationDay().getMonth() == dayNow.getMonth()
+                && r.getReservationDay().getYear() == dayNow.getYear())
+                .collect(Collectors.toList());
+        if(filterReservations.isEmpty())
+            return null;
+
+        return this.toDto(filterReservations.get(0));
     }
 
     @Override

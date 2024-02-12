@@ -15,4 +15,8 @@ import java.util.UUID;
 public class ReservationResponseDTO extends ReservationRequestDTO {
     private UUID uuid;
 
+    @Override
+    public String toString(){
+        return String.format("Day: %s, Start Hour: %s, End hour: %s", this.getReservationDay(), this.getStartHour(), this.getEndHour());
+    }
 }
